@@ -3,6 +3,7 @@ package com.rzit.FoodAnalysis.util;
 import com.rzit.FoodAnalysis.model.Item;
 
 /**
+ * This utility class used to Food Satisfaction Analyser utils
  * Created by Ranjith on 8/3/2017.
  */
 public class FoodSatisfactionAnalyser {

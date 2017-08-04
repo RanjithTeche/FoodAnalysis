@@ -1,15 +1,16 @@
 package com.rzit.FoodAnalysis.controller;
 
-import com.rzit.FoodAnalysis.model.Item;
+import com.rzit.FoodAnalysis.command.FoodStatisticsForm;
 import com.rzit.FoodAnalysis.service.FoodSatisfactionAnalyseService;
+import com.rzit.FoodAnalysis.validator.FileValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.io.File;
-import java.io.IOException;
+import java.util.stream.Collectors;
 
 /**
  * This controller contains handler methods to upload file and find max satisfaction.
@@ -21,18 +22,38 @@ import java.io.IOException;
 public class FoodSatisfactionAnalyseController {
     @Autowired
     FoodSatisfactionAnalyseService foodSatisfactionAnalyseService;
+    @Autowired
+    FileValidator fileValidator;
 
     /**
-     * This method handles the requests where user uploads the file. After processing the file it returns max satisfaction found.
+     * This method is used to bind the validator to webDataBinder
      *
-     * @param multipartFile
+     * @param webDataBinder
+     */
+    @InitBinder("foodStatisticsForm")
+    void initBinder(WebDataBinder webDataBinder) {
+        webDataBinder.setValidator(fileValidator);
+    }
+
+    /**
+     * This method handles the requests where user uploads the food analytics data.
+     * After processing the data it returns max satisfaction found.
+     *
+     * @param foodStatisticsForm the {@code FoodStatisticsForm} instance to hold the foodStatisticFile
      * @return a message which contains max satisfaction.
      */
     @RequestMapping(value = "/upload/foodStatistics")
-    public String uploadFileHandler(@RequestParam("file") MultipartFile multipartFile) {
+    public String uploadFileHandler(@Valid FoodStatisticsForm foodStatisticsForm, Errors errors) {
+        if (errors.hasErrors()) {
+            // get all errors
+            return errors.getAllErrors()
+                    .stream()
+                    .map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(","));
+        }
         try {
             File file = File.createTempFile("data", ".txt");
-            multipartFile.transferTo(file);
+            foodStatisticsForm.getFoodStatisticFile().transferTo(file);
             int maximumSatisfaction = foodSatisfactionAnalyseService.findMaximumSatisfaction(file);
             return "Maximum satisfaction found is : " + maximumSatisfaction;
         } catch (Exception e) {

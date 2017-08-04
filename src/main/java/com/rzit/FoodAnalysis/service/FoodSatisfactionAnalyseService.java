@@ -1,7 +1,5 @@
 package com.rzit.FoodAnalysis.service;
 
-import com.rzit.FoodAnalysis.model.Item;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 

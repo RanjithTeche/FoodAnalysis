@@ -14,6 +14,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+/**
+ * This test class used to test the Food Analysis Application
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class FoodAnalysisApplicationTests {
